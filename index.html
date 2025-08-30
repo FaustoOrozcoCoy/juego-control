@@ -3,40 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Juego: Control de Fase No Mínima</title>
+    <title>Sandbox de Control Dinámico</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>El Desafío del Acelerador Inverso</h1>
-    <p>Usa las <strong>flechas ◀ y ▶</strong> para mover el coche. El objetivo es llegar y detenerte en la línea verde.</p>
+    <h1>Sandbox de Control Dinámico</h1>
+    <p>Usa las <strong>flechas ◀ (frenar) y ▶ (acelerar)</strong> para controlar el coche. Intenta seguir la pista.</p>
     
     <div class="main-container">
-        <!-- El canvas del juego se insertará aquí por p5.js -->
         <div id="game-canvas-container"></div>
         
         <div class="controls-container">
-            <h3>Panel de Control</h3>
-            <label for="zero-slider">Posición del Cero del Sistema:</label>
-            <input type="range" id="zero-slider" min="-2" max="2" value="2" step="0.1">
-            <p>Valor actual: <span id="zero-value">2.0</span></p>
-            <button id="reset-button">Reiniciar Simulación</button>
-            <div class="info">
-                <p><strong>Cero < 0 (Semiplano Izquierdo):</strong> Comportamiento predecible (Fase Mínima).</p>
-                <p><strong>Cero > 0 (Semiplano Derecho):</strong> Comportamiento inverso. ¡El coche se moverá en dirección opuesta al acelerar!</p>
+            <h3>Panel de Control del Vehículo</h3>
+            
+            <label for="system-type">Tipo de Dinámica del Acelerador:</label>
+            <select id="system-type">
+                <option value="first-order">1er Orden</option>
+                <option value="second-order">2º Orden Subamortiguado</option>
+            </select>
+
+            <div id="first-order-params">
+                <label for="tau-slider">Constante de Tiempo (τ): <span id="tau-value">1.0</span>s</label>
+                <input type="range" id="tau-slider" min="0.2" max="3" value="1" step="0.1">
             </div>
+
+            <div id="second-order-params" class="hidden">
+                <label for="os-slider">Sobreimpulso (%OS): <span id="os-value">20</span>%</label>
+                <input type="range" id="os-slider" min="1" max="70" value="20" step="1">
+                
+                <label for="ts-slider">Tiempo de Establecimiento (Ts): <span id="ts-value">2.0</span>s</label>
+                <input type="range" id="ts-slider" min="0.5" max="5" value="2" step="0.1">
+            </div>
+
+            <div class="nmp-toggle">
+                <label for="nmp-checkbox">Añadir Cero de Fase No Mínima (Respuesta Inversa)</label>
+                <input type="checkbox" id="nmp-checkbox">
+            </div>
+            
+            <button id="reset-button">Reiniciar Simulación</button>
         </div>
     </div>
     
-    <div class="chart-container">
-        <!-- El canvas de la gráfica se usará por Chart.js -->
-        <canvas id="velocity-chart"></canvas>
+    <div class="charts-wrapper">
+        <div class="chart-container">
+            <h4>Respuesta Transitoria (Ventana de 5τ)</h4>
+            <canvas id="transient-chart"></canvas>
+        </div>
+        <div class="chart-container">
+            <h4>Historial Completo de Velocidad</h4>
+            <canvas id="historical-chart"></canvas>
+        </div>
     </div>
 
-    <!-- Librerías requeridas -->
     <script src="https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Nuestro código del juego -->
     <script src="sketch.js"></script>
 </body>
 </html>
