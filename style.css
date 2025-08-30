@@ -21,9 +21,28 @@ h1, h4 {
 }
 
 #game-canvas-container {
+    position: relative; /* Para posicionar el log de resultados */
     border: 2px solid #00bcd4;
     box-shadow: 0 0 10px #00bcd4;
+    width: 600px;
+    height: 300px;
 }
+
+#results-log {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #00bcd4;
+    text-align: left;
+    font-size: 14px;
+}
+#results-log.hidden { display: none; }
+#results-log h4 { margin: 0 0 10px 0; }
+#log-list { list-style: none; padding: 0; margin: 0; }
+#log-list li { margin-bottom: 5px; }
 
 .controls-container {
     background-color: #2a2a2a;
@@ -33,39 +52,12 @@ h1, h4 {
     text-align: left;
 }
 
-.controls-container h3 {
-    margin-top: 0;
-    text-align: center;
-}
-
-label {
-    display: block;
-    margin: 15px 0 5px 0;
-}
-
-input[type="range"] {
-    width: 100%;
-}
-
-select, button {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    background-color: #333;
-    color: #f0f0f0;
-    border: 1px solid #555;
-    font-size: 16px;
-}
-
-button {
-    background-color: #00bcd4;
-    cursor: pointer;
-    margin-top: 20px;
-}
-
-button:hover {
-    background-color: #00acc1;
-}
+.controls-container h3 { margin-top: 0; text-align: center; }
+label { display: block; margin: 15px 0 5px 0; }
+input[type="range"] { width: 100%; }
+select, button { width: 100%; padding: 10px; border-radius: 5px; background-color: #333; color: #f0f0f0; border: 1px solid #555; font-size: 16px; }
+button { background-color: #00bcd4; cursor: pointer; margin-top: 20px; }
+button:hover { background-color: #00acc1; }
 
 .nmp-toggle {
     margin-top: 20px;
@@ -75,29 +67,9 @@ button:hover {
     align-items: center;
     gap: 10px;
 }
+.nmp-toggle label { margin: 0; }
+.nmp-toggle input[type="checkbox"] { transform: scale(1.2); }
 
-.nmp-toggle label {
-    margin: 0;
-}
-
-.charts-wrapper {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    width: 90%;
-    max-width: 1200px;
-    margin: 30px auto;
-    flex-wrap: wrap;
-}
-
-.chart-container {
-    flex: 1;
-    min-width: 400px;
-    background-color: #2a2a2a;
-    padding: 15px;
-    border-radius: 8px;
-}
-
-.hidden {
-    display: none;
-}
+.charts-wrapper { display: flex; justify-content: center; gap: 20px; width: 90%; max-width: 1200px; margin: 30px auto; flex-wrap: wrap; }
+.chart-container { flex: 1; min-width: 400px; background-color: #2a2a2a; padding: 15px; border-radius: 8px; }
+.hidden { display: none; }
