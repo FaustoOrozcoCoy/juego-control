@@ -7,8 +7,8 @@ body {
     padding: 20px;
 }
 
-h1 {
-    color: #4CAF50;
+h1, h4 {
+    color: #00bcd4;
 }
 
 .main-container {
@@ -17,18 +17,19 @@ h1 {
     align-items: flex-start;
     gap: 30px;
     margin-top: 20px;
+    flex-wrap: wrap;
 }
 
 #game-canvas-container {
-    border: 2px solid #4CAF50;
-    box-shadow: 0 0 10px #4CAF50;
+    border: 2px solid #00bcd4;
+    box-shadow: 0 0 10px #00bcd4;
 }
 
 .controls-container {
     background-color: #2a2a2a;
     padding: 20px;
     border-radius: 8px;
-    width: 300px;
+    width: 320px;
     text-align: left;
 }
 
@@ -37,44 +38,66 @@ h1 {
     text-align: center;
 }
 
-.controls-container label {
+label {
     display: block;
-    margin-bottom: 10px;
+    margin: 15px 0 5px 0;
 }
 
 input[type="range"] {
     width: 100%;
 }
 
-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
+select, button {
     width: 100%;
-    margin-top: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #333;
+    color: #f0f0f0;
+    border: 1px solid #555;
     font-size: 16px;
 }
 
-button:hover {
-    background-color: #45a049;
+button {
+    background-color: #00bcd4;
+    cursor: pointer;
+    margin-top: 20px;
 }
 
-.info {
+button:hover {
+    background-color: #00acc1;
+}
+
+.nmp-toggle {
     margin-top: 20px;
-    font-size: 14px;
-    color: #cccccc;
-    border-top: 1px solid #444;
     padding-top: 15px;
+    border-top: 1px solid #444;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nmp-toggle label {
+    margin: 0;
+}
+
+.charts-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    width: 90%;
+    max-width: 1200px;
+    margin: 30px auto;
+    flex-wrap: wrap;
 }
 
 .chart-container {
-    width: 80%;
-    max-width: 800px;
-    margin: 30px auto;
+    flex: 1;
+    min-width: 400px;
     background-color: #2a2a2a;
     padding: 15px;
     border-radius: 8px;
+}
+
+.hidden {
+    display: none;
 }
