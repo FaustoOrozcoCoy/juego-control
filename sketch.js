@@ -5,7 +5,7 @@ let car;
 let carImage;
 let track;
 let target;
-let lastResult = null; // Para mostrar el último resultado en pantalla
+let lastResult = null;
 
 // Controles HTML
 let systemTypeSelect, tauSlider, osSlider, tsSlider, nmpCheckbox, resetButton, sensitivitySlider;
@@ -37,7 +37,7 @@ function setup() {
     createCanvas(600, 300).parent('game-canvas-container');
     
     track = { x: 50, y: 50, w: 500, h: 200, r: 50, get totalLength() { return (this.w - 2 * this.r) * 2 + (this.h - 2 * this.r) * 2 + 2 * Math.PI * this.r; } };
-    target = { distance: (track.w - 2 * track.r) / 2, size: 5 }; // Meta en el centro de la recta superior
+    target = { distance: (track.w - 2 * track.r) / 2, size: 5 };
     
     setupControls();
     setupCharts();
@@ -62,14 +62,12 @@ function updateSimulation() {
     if (keyIsDown(LEFT_ARROW)) userInput = -1;
     if (keyIsDown(RIGHT_ARROW)) userInput = 1;
 
-    // Iniciar cronómetro si el coche arranca desde el reposo
     if (userInput !== 0 && !isTiming && abs(car.velocity) < STOP_THRESHOLD) {
         isTiming = true;
         startTime = millis();
-        lastResult = null; // Borrar resultado anterior
+        lastResult = null;
     }
 
-    // Lógica de simulación
     let params = getSystemParams();
     let { a0, a1, b0, b1 } = params;
     
@@ -87,18 +85,15 @@ function updateSimulation() {
     }
     prevBaseOutput = baseOutput;
 
-    // Actualizar física del coche
     let sensitivity = parseFloat(sensitivitySlider.value());
     sensitivityValueSpan.html(sensitivity);
     car.velocity += finalAcceleration * dt * sensitivity;
     car.velocity *= 0.99;
-    car.distance += car.velocity * dt * 20; // Escalar para que se mueva a una velocidad razonable
+    car.distance += car.velocity * dt * 20;
 
-    // Mantener en pista cerrada
     if (car.distance < 0) car.distance += track.totalLength;
     car.distance %= track.totalLength;
 
-    // Lógica de detección de parada
     if (abs(car.velocity) < STOP_THRESHOLD) {
         stopTimer += dt;
     } else {
@@ -113,26 +108,20 @@ function updateSimulation() {
 
 function calculateAndLogResult() {
     const elapsedTime = ((millis() - startTime) / 1000).toFixed(2);
-    
-    // Calcular la distancia más corta en una pista circular
     let error1 = abs(car.distance - target.distance);
     let error2 = track.totalLength - error1;
     const distanceError = min(error1, error2).toFixed(2);
-
     lastResult = { time: elapsedTime, error: distanceError };
     
-    // Añadir al log
     const newLogItem = document.createElement('li');
     newLogItem.innerText = `Precisión: ${distanceError}px, Tiempo: ${elapsedTime}s`;
     logList.prepend(newLogItem);
     
-    // Limitar el log a 3 entradas
     if (logList.children.length > 3) {
         logList.removeChild(logList.lastChild);
     }
     resultsLog.removeClass('hidden');
 }
-
 
 function getSystemParams() {
     let a0, a1, b0, b1, tau;
@@ -160,7 +149,8 @@ function setupControls() {
     osSlider = select('#os-slider'); osValueSpan = select('#os-value');
     tsSlider = select('#ts-slider'); tsValueSpan = select('#ts-value');
     nmpCheckbox = select('#nmp-checkbox');
-    sensitivitySlider = select('#sensitivity-slider'); sensitivityValueSpan = select('#sensitivity-value');
+    sensitivitySlider = select('#sensitivity-slider');
+    sensitivityValueSpan = select('#sensitivity-value'); // FIX: Esta línea faltaba
     resetButton = select('#reset-button');
     firstOrderParamsDiv = select('#first-order-params'); secondOrderParamsDiv = select('#second-order-params');
     resultsLog = select('#results-log'); logList = select('#log-list').elt;
@@ -169,8 +159,36 @@ function setupControls() {
     resetButton.mousePressed(resetSimulation);
 }
 
-function toggleParamsVisibility() { /* ... (código sin cambios) ... */ }
-function setupCharts() { /* ... (código sin cambios) ... */ }
+function toggleParamsVisibility() {
+    if (systemTypeSelect.value() === 'first-order') {
+        firstOrderParamsDiv.removeClass('hidden');
+        secondOrderParamsDiv.addClass('hidden');
+    } else {
+        firstOrderParamsDiv.addClass('hidden');
+        secondOrderParamsDiv.removeClass('hidden');
+    }
+}
+
+function setupCharts() {
+    const chartOptions = {
+        scales: { 
+            y: { beginAtZero: false, ticks: {color: '#f0f0f0'} }, 
+            x: { display: false } 
+        },
+        plugins: { legend: { display: false } },
+        animation: { duration: 0 }
+    };
+    const transientCtx = document.getElementById('transient-chart').getContext('2d');
+    transientChart = new Chart(transientCtx, {
+        type: 'line', data: { labels: [], datasets: [{ data: [], borderColor: '#00bcd4', borderWidth: 2, pointRadius: 0 }] },
+        options: chartOptions
+    });
+    const historicalCtx = document.getElementById('historical-chart').getContext('2d');
+    historicalChart = new Chart(historicalCtx, {
+        type: 'line', data: { labels: historicalLabels, datasets: [{ data: historicalData, borderColor: '#ff9800', borderWidth: 2, pointRadius: 0 }] },
+        options: chartOptions
+    });
+}
 
 function updateCharts() {
     historicalData.push(car.velocity);
@@ -194,7 +212,6 @@ function resetSimulation() {
     
     historicalData.length = 0; historicalLabels.length = 0;
     
-    // Limpiar el log visual
     resultsLog.addClass('hidden');
     while (logList.firstChild) {
         logList.removeChild(logList.firstChild);
@@ -216,7 +233,7 @@ function drawCar() {
 
 function drawTarget() {
     let { x, y } = getTrackCoordinates(target.distance);
-    let angle = car.angle; // Usamos el último ángulo calculado para la orientación
+    let angle = 0; // La meta siempre es horizontal en este punto de la pista
     push();
     translate(x, y);
     rotate(angle);
@@ -232,6 +249,7 @@ function displayLastResult() {
         textAlign(CENTER, CENTER);
         textSize(18);
         fill(255);
+        noStroke();
         text(`¡Detenido! Precisión: ${lastResult.error}px, Tiempo: ${lastResult.time}s`, width / 2, 25);
         pop();
     }
@@ -248,22 +266,22 @@ function getTrackCoordinates(d) {
     if (d < p1) { // Recta superior
         x = track.x + track.r + d; y = track.y + track.r; angle_rad = 0;
     } else if (d < p2) { // Esquina superior derecha
-        let angle = (d - p1) / (c / 4) * (HALF_PI); angle_rad = angle;
+        let angle = (d - p1) / (c / 4) * HALF_PI; angle_rad = angle;
         x = track.x + track.r + w + track.r * sin(angle); y = track.y + track.r - track.r * cos(angle);
     } else if (d < p3) { // Recta derecha
         x = track.x + track.r + w + track.r; y = track.y + track.r + (d - p2); angle_rad = HALF_PI;
     } else if (d < p4) { // Esquina inferior derecha
-        let angle = (d - p3) / (c / 4) * (HALF_PI) + HALF_PI; angle_rad = angle;
+        let angle = (d - p3) / (c / 4) * HALF_PI + HALF_PI; angle_rad = angle;
         x = track.x + track.r + w + track.r * cos(angle - HALF_PI); y = track.y + track.r + h + track.r * sin(angle - HALF_PI);
     } else if (d < p5) { // Recta inferior
         x = track.x + track.r + w - (d - p4); y = track.y + track.r + h + track.r; angle_rad = PI;
     } else if (d < p6) { // Esquina inferior izquierda
-        let angle = (d - p5) / (c / 4) * (HALF_PI) + PI; angle_rad = angle;
+        let angle = (d - p5) / (c / 4) * HALF_PI + PI; angle_rad = angle;
         x = track.x + track.r - track.r * sin(angle - PI); y = track.y + track.r + h - track.r * cos(angle - PI);
     } else if (d < p7) { // Recta izquierda
         x = track.x; y = track.y + track.r + h - (d - p6); angle_rad = 3 * HALF_PI;
     } else { // Esquina superior izquierda
-        let angle = (d - p7) / (c / 4) * (HALF_PI) + 3 * HALF_PI; angle_rad = angle;
+        let angle = (d - p7) / (c / 4) * HALF_PI + 3 * HALF_PI; angle_rad = angle;
         x = track.x + track.r * sin(angle - 3*HALF_PI); y = track.y + track.r - track.r * cos(angle - 3*HALF_PI);
     }
     car.angle = angle_rad;
@@ -271,39 +289,9 @@ function getTrackCoordinates(d) {
 }
 
 function drawTrack() {
-    noFill(); stroke(200); strokeWeight(20); strokeJoin(ROUND);
+    noFill();
+    stroke(200);
+    strokeWeight(20);
+    strokeJoin(ROUND);
     rect(track.x, track.y, track.w, track.h, track.r);
-}
-
-// Re-pegar la función toggleParamsVisibility aquí, ya que no cambió.
-function toggleParamsVisibility() {
-    if (systemTypeSelect.value() === 'first-order') {
-        firstOrderParamsDiv.removeClass('hidden');
-        secondOrderParamsDiv.addClass('hidden');
-    } else {
-        firstOrderParamsDiv.addClass('hidden');
-        secondOrderParamsDiv.removeClass('hidden');
-    }
-}
-
-// Re-pegar la función setupCharts aquí, ya que no cambió.
-function setupCharts() {
-    const chartOptions = {
-        scales: { 
-            y: { beginAtZero: false, ticks: {color: '#f0f0f0'} }, 
-            x: { display: false } 
-        },
-        plugins: { legend: { display: false } },
-        animation: { duration: 0 }
-    };
-    const transientCtx = document.getElementById('transient-chart').getContext('2d');
-    transientChart = new Chart(transientCtx, {
-        type: 'line', data: { labels: [], datasets: [{ data: [], borderColor: '#00bcd4', borderWidth: 2, pointRadius: 0 }] },
-        options: chartOptions
-    });
-    const historicalCtx = document.getElementById('historical-chart').getContext('2d');
-    historicalChart = new Chart(historicalCtx, {
-        type: 'line', data: { labels: historicalLabels, datasets: [{ data: historicalData, borderColor: '#ff9800', borderWidth: 2, pointRadius: 0 }] },
-        options: chartOptions
-    });
 }
