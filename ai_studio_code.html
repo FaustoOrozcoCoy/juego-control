@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego: Control de Fase No Mínima</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>El Desafío del Acelerador Inverso</h1>
+    <p>Usa las <strong>flechas ◀ y ▶</strong> para mover el coche. El objetivo es llegar y detenerte en la línea verde.</p>
+    
+    <div class="main-container">
+        <!-- El canvas del juego se insertará aquí por p5.js -->
+        <div id="game-canvas-container"></div>
+        
+        <div class="controls-container">
+            <h3>Panel de Control</h3>
+            <label for="zero-slider">Posición del Cero del Sistema:</label>
+            <input type="range" id="zero-slider" min="-2" max="2" value="2" step="0.1">
+            <p>Valor actual: <span id="zero-value">2.0</span></p>
+            <button id="reset-button">Reiniciar Simulación</button>
+            <div class="info">
+                <p><strong>Cero < 0 (Semiplano Izquierdo):</strong> Comportamiento predecible (Fase Mínima).</p>
+                <p><strong>Cero > 0 (Semiplano Derecho):</strong> Comportamiento inverso. ¡El coche se moverá en dirección opuesta al acelerar!</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="chart-container">
+        <!-- El canvas de la gráfica se usará por Chart.js -->
+        <canvas id="velocity-chart"></canvas>
+    </div>
+
+    <!-- Librerías requeridas -->
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Nuestro código del juego -->
+    <script src="sketch.js"></script>
+</body>
+</html>
