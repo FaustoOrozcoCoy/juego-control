@@ -8,10 +8,16 @@
 </head>
 <body>
     <h1>Sandbox de Control Dinámico</h1>
-    <p>Usa las <strong>flechas ◀ (frenar) y ▶ (acelerar)</strong> para controlar el coche. Intenta seguir la pista.</p>
+    <p>Usa las <strong>flechas ◀ (frenar) y ▶ (acelerar)</strong>. El objetivo es detener el coche sobre la <strong>línea de meta azul</strong>.</p>
     
     <div class="main-container">
-        <div id="game-canvas-container"></div>
+        <div id="game-canvas-container">
+            <!-- El canvas del juego se insertará aquí -->
+            <div id="results-log" class="hidden">
+                <h4>Registro de Intentos</h4>
+                <ul id="log-list"></ul>
+            </div>
+        </div>
         
         <div class="controls-container">
             <h3>Panel de Control del Vehículo</h3>
@@ -36,9 +42,12 @@
             </div>
 
             <div class="nmp-toggle">
-                <label for="nmp-checkbox">Añadir Cero de Fase No Mínima (Respuesta Inversa)</label>
                 <input type="checkbox" id="nmp-checkbox">
+                <label for="nmp-checkbox">Añadir Cero de Fase No Mínima (Respuesta Inversa)</label>
             </div>
+            
+            <label for="sensitivity-slider">Sensibilidad del Acelerador: <span id="sensitivity-value">20</span></label>
+            <input type="range" id="sensitivity-slider" min="5" max="100" value="20" step="1">
             
             <button id="reset-button">Reiniciar Simulación</button>
         </div>
